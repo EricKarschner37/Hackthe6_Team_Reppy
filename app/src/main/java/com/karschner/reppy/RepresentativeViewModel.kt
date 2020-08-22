@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Math.min
 
 class RepresentativeViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = "RepresentativeViewModel"
@@ -30,6 +31,7 @@ class RepresentativeViewModel(application: Application) : AndroidViewModel(appli
                 mainHandler.post {
                     representative.value = rep
                 }
+                getVotingInfo(rep)
             }
 
         GovDataAPI.getSenators(
@@ -39,6 +41,17 @@ class RepresentativeViewModel(application: Application) : AndroidViewModel(appli
                 mainHandler.post {
                     this.senators.value = senators
                 }
+                getVotingInfo(senators)
             }
+    }
+
+    private fun getVotingInfo(representatives: JSONArray){
+        for (i in 0 until 5.coerceAtMost(representatives.length())){
+            val rep = representatives.getJSONObject(i)
+            GovDataAPI.getRecentVotingRecords(rep.getString("id")) {
+                rep.put("recent_votes", it)
+                Log.i(TAG, rep.toString())
+            }
+        }
     }
 }

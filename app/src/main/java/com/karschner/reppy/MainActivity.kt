@@ -9,12 +9,14 @@ import androidx.activity.viewModels
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
-    val TAG = "MainActivity"
-    lateinit var prefs: SharedPreferences
-    val viewModel: RepresentativeViewModel by viewModels()
+    private val TAG = "MainActivity"
+    private lateinit var prefs: SharedPreferences
+    private val viewModel: RepresentativeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,26 +28,26 @@ class MainActivity : AppCompatActivity() {
             putString("district", "12")
         }
 
-        representative.apply{
-            val linearManager = LinearLayoutManager(this@MainActivity)
-            linearManager.orientation = LinearLayoutManager.HORIZONTAL
-            layoutManager = linearManager
-        }
+        representative.addHorizontalLayoutManager()
+        senators.addHorizontalLayoutManager()
 
-        senators.apply{
-            val linearManager = LinearLayoutManager(this@MainActivity)
-            linearManager.orientation = LinearLayoutManager.HORIZONTAL
-            layoutManager = linearManager
-        }
+        representative.adapter = RepresentativeAdapter(JSONArray())
+        senators.adapter = RepresentativeAdapter(JSONArray())
 
         viewModel.representative.observe(this){
-            representative.adapter = RepresentativeAdapter(it)
+            (representative.adapter as RepresentativeAdapter).setRepresentatives(it)
         }
 
         viewModel.senators.observe(this) {
-            senators.adapter = RepresentativeAdapter(it)
+            (senators.adapter as RepresentativeAdapter).setRepresentatives(it)
         }
 
         viewModel.init()
+    }
+
+    private fun RecyclerView.addHorizontalLayoutManager(){
+        val linearManager = LinearLayoutManager(context)
+        linearManager.orientation = LinearLayoutManager.HORIZONTAL
+        this.layoutManager = linearManager
     }
 }

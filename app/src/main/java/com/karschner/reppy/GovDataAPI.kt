@@ -42,4 +42,23 @@ object GovDataAPI {
 
         httpAsync.join()
     }
+
+    fun getRecentVotingRecords(memberId: String, onComplete: (JSONArray) -> Unit){
+        val httpAsync = "$baseUrl/$memberId/votes.json"
+            .httpGet()
+            .header(Pair("X-API-Key", key))
+            .responseString { request, response, result ->
+                if (result is Result.Success){
+                    val data = JSONObject(result.get())
+                        .getJSONArray("results")
+                        .getJSONObject(0)
+                        .getJSONArray("votes")
+                    onComplete.invoke(data)
+                } else if (result is Result.Failure){
+                    Log.e(TAG, result.getException().toString())
+                }
+            }
+
+        httpAsync.join()
+    }
 }

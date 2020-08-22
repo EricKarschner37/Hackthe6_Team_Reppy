@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.representative_card.view.*
 import org.json.JSONArray
 
-class RepresentativeAdapter(private val representatives: JSONArray): RecyclerView.Adapter<RepresentativeAdapter.ViewHolder>() {
+class RepresentativeAdapter(private var representatives: JSONArray): RecyclerView.Adapter<RepresentativeAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.representative_card, parent, false))
@@ -33,4 +33,8 @@ class RepresentativeAdapter(private val representatives: JSONArray): RecyclerVie
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
+    fun setRepresentatives(representatives: JSONArray){
+        this.representatives = representatives
+        notifyDataSetChanged()
+    }
 }
